@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>位置情報リダイレクト & URL生成</title>
+    <script>
+        // 1. URL生成ボタン用の関数
+        function generateUrl() {
+            const baseUrl = "https://example.com/redirect?"; // リダイレクト先のURL（必要に応じて変更）
+            const lat = "latitude_placeholder"; // 位置情報のプレースホルダ
+            const lon = "longitude_placeholder"; // 位置情報のプレースホルダ
+            
+            const generatedUrl = `${baseUrl}lat=${lat}&lon=${lon}`;
+            document.getElementById("generatedUrl").value = generatedUrl;
+            document.getElementById("copyButton").style.display = "inline";
+        }
+
+        // 2. 位置情報取得とリダイレクト処理
+        function redirectWithLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(success, error);
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        function success(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            // URLに位置情報を埋め込む
+            const baseUrl = "https://example.com/redirect?"; // こちらも変更可
+            const targetUrl = `${baseUrl}lat=${lat}&lon=${lon}`;
+
+            // 位置情報取得後にリダイレクト
+            window.location.href = targetUrl;
+        }
+
+        function error(err) {
+            console.warn(`ERROR(${err.code}): ${err.message}`);
+            alert("位置情報を取得できませんでした。");
+        }
+
+        // 3. 生成されたURLをコピーする
+        function copyToClipboard() {
+            const copyText = document.getElementById("generatedUrl");
+            copyText.select();
+            document.execCommand("copy");
+            alert("URLがコピーされました!");
+        }
+    </script>
+</head>
+<body>
+    <h1>位置情報リダイレクトURL生成 & 確認</h1>
+
+    <!-- 位置情報取得ボタン -->
+    <button onclick="redirectWithLocation()">位置情報取得してリダイレクト</button>
+    
+    <hr>
+
+    <!-- URL生成ボタン -->
+    <button onclick="generateUrl()">URLを生成</button>
+    <br><br>
+
+    <label for="generatedUrl">生成されたURL:</label>
+    <input type="text" id="generatedUrl" readonly style="width: 80%;" />
+    <button id="copyButton" style="display: none;" onclick="copyToClipboard()">URLをコピー</button>
+    
+    <hr>
+    
+    <!-- リダイレクト確認ボタン -->
+    <button onclick="alert('リダイレクト先URLに位置情報が送信されました。')">リダイレクト確認</button>
+</body>
+</html>
